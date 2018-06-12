@@ -1,0 +1,46 @@
+<!--
+ Copyright (c) 2014, 2016, Oracle and/or its affiliates.
+ The Universal Permissive License (UPL), Version 1.0
+-->
+
+<div class="oj-flex oj-header-border">
+    <div class="oj-flex-item">
+        <div class="oj-sm-float-end" id='buttons-container'>
+            <button id="Extractdata" data-bind="click: buttonClick, ojComponent: {component: 'ojButton', 
+                                                                           icons: {end:'oj-fwk-icon-caret-end oj-fwk-icon'}, 
+                                                                           label: 'Extract Data'}">
+            </button>
+        </div>
+    </div>
+</div>
+<div id="form-container">
+    <div class="oj-form-layout">
+        <h3>Enter Extract configuration</h3> 
+        <br>
+        <div class="oj-form oj-sm-odd-cols-5 oj-md-odd-cols-2 oj-md-labels-inline">
+            <div class="oj-flex">               
+                <div class="oj-flex-item">
+                    <label for="text-input">REST Get Service URL</label>
+                </div>
+                <div class="oj-flex-item">
+                    <!--                    <input id="text-input" data-bind="ojComponent: {component: 'ojInputNumber', value:{{234345}}">-->
+                    <oj-input-text id="text-input" value="https://apex.oracle.com/pls/apex/ojet/hr/empinfo/" required="true" ></oj-input-text>
+                </div>              
+            </div>   
+        </div>
+        <div class="oj-form oj-sm-odd-cols-5 oj-md-odd-cols-2 oj-md-labels-inline">
+            <div class="oj-flex">               
+                <div class="oj-flex-item">
+                    <label for="text-input">File Prefix:</label>
+                </div>
+                <div class="oj-flex-item">
+                    <!--                    <input id="text-input" data-bind="ojComponent: {component: 'ojInputNumber', value:{{234345}}">-->
+                    <oj-input-text id="text-input" value="Employee.csv"></oj-input-text>
+                </div>              
+            </div>   
+        </div>
+        
+    </div>
+
+
+
