@@ -13,56 +13,75 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'ojs/ojbutton', 'ojs/ojinputtext'],
                 this.value = ko.observable("Green");
 
                 self.buttonClick = function (event) {
+                    
+                    $.ajaxSetup({async: false});
 
                     var csvContent = '';
-                    jQuery.ajax({
-                        url: "https://apex.oracle.com/pls/apex/ojet/hr/empinfo/?page=0",
-                        type: "GET",
-                        contentType: 'application/json; charset=utf-8',
-                        success: function (resultData) {
-
-                            console.log(resultData);
-                            for (index = 0; index < resultData.items.length; index++)
-                            {
-                                if (index === 0)
+                    var Resturl = "https://apex.oracle.com/pls/apex/ojet/hr/empinfo/?page=0"
+                    console.log(Resturl.length);
+                    var headerExtract=false;
+                    while (Resturl.length!==0) {
+                        jQuery.ajax({
+                            url: Resturl,
+                            type: "GET",
+                            contentType: 'application/json; charset=utf-8',
+                            success: function (resultData) {                                  
+                                console.log(resultData);
+                                for (index = 0; index < resultData.items.length; index++)
                                 {
-                                    var key = Object.keys(resultData.items[index]);
-                                    csvContent += key + '\n';
+                                    if (index === 0 && headerExtract === false)
+                                    {
+                                        var key = Object.keys(resultData.items[index]);
+                                        csvContent += key + '\n';
+                                        headerExtract= true;
 
+                                    }
+                                    var values = Object.values(resultData.items[index]);
+                                    csvContent += values + '\n';
+                                   
                                 }
-                                var values = Object.values(resultData.items[index]);
-                                csvContent += values + '\n';
-                                // console.log(key);
+                                if(typeof(resultData.next) != "undefined")
+                                {
+                                 Resturl = Object.values(resultData.next)[0]; 
+                             }
+                             else{
+                                 Resturl="";
+                             }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                console.log("Failed!!");
+                                Resturl="";
+                            },
 
-                            }
+                            timeout: 120000,
+                        });
+                        
+                    }
+                    
+                    if(csvContent.length !==0){
+                         var download = function (content, fileName, mimeType) {
+                                    var a = document.createElement('a');
+                                    mimeType = mimeType || 'application/octet-stream';
 
-                            var download = function (content, fileName, mimeType) {
-                                var a = document.createElement('a');
-                                mimeType = mimeType || 'application/octet-stream';
-
-                                if (navigator.msSaveBlob) { // IE10
-                                    navigator.msSaveBlob(new Blob([content], {
-                                        type: mimeType
-                                    }), fileName);
-                                } else if (URL && 'download' in a) { //html5 A[download]
-                                    a.href = URL.createObjectURL(new Blob([content], {
-                                        type: mimeType
-                                    }));
-                                    a.setAttribute('download', fileName);
-                                    document.body.appendChild(a);
-                                    a.click();
-                                    document.body.removeChild(a);
-                                } else {
-                                    location.href = 'data:application/octet-stream,' + encodeURIComponent(content); // only this mime type is supported
+                                    if (navigator.msSaveBlob) { // IE10
+                                        navigator.msSaveBlob(new Blob([content], {
+                                            type: mimeType
+                                        }), fileName);
+                                    } else if (URL && 'download' in a) { //html5 A[download]
+                                        a.href = URL.createObjectURL(new Blob([content], {
+                                            type: mimeType
+                                        }));
+                                        a.setAttribute('download', fileName);
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        document.body.removeChild(a);
+                                    } else {
+                                        location.href = 'data:application/octet-stream,' + encodeURIComponent(content); // only this mime type is supported
+                                    }
                                 }
-                            }
-                            download(csvContent, 'dowload.csv', 'text/csv;encoding:utf-8');
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                        },
+                                download(csvContent, 'dowload.csv', 'text/csv;encoding:utf-8');
+                    }
 
-                        timeout: 120000,
-                    });
                     return true;
                 }
 
