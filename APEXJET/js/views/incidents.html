@@ -20,26 +20,47 @@
         <div class="oj-form oj-sm-odd-cols-5 oj-md-odd-cols-2 oj-md-labels-inline">
             <div class="oj-flex">               
                 <div class="oj-flex-item">
-                    <label for="text-input">REST Get Service URL</label>
+                    <label for="text-input-URL">REST Get Service URL</label>
                 </div>
-                <div class="oj-flex-item">
-                    <!--                    <input id="text-input" data-bind="ojComponent: {component: 'ojInputNumber', value:{{234345}}">-->
-                    <oj-input-text id="text-input" value="https://apex.oracle.com/pls/apex/ojet/hr/empinfo/" required="true" style="max-width:25em"></oj-input-text>
+                <div class="oj-flex-item">                   
+                    <!--<oj-input-text id="text-input-URL" value="https://apex.oracle.com/pls/apex/ojet/hr/empinfo/" required="true" style="max-width:25em"></oj-input-text>-->
+                    <input id="text-input-URL" data-bind="ojComponent: {component: 'ojInputText', value: Resturl,style: 'max-width:25em'}">
                 </div>              
-            </div>   
-        </div>
-        <div class="oj-form oj-sm-odd-cols-5 oj-md-odd-cols-2 oj-md-labels-inline">
+            </div> 
+
             <div class="oj-flex">               
                 <div class="oj-flex-item">
-                    <label for="text-input">File Prefix:</label>
+                    <label for="text-input-user-nm">User Name</label>
                 </div>
-                <div class="oj-flex-item">
-                    <!--                    <input id="text-input" data-bind="ojComponent: {component: 'ojInputNumber', value:{{234345}}">-->
-                    <oj-input-text id="text-input" value="Employee.csv"></oj-input-text>
+                <div class="oj-flex-item">                                   
+                    <!--<oj-input-text id="text-input-user-nm" value=""></oj-input-text>-->
+                    <input id="text-input-user-nm" data-bind="ojComponent: {component: 'ojInputText', value: username}">
                 </div>              
             </div>   
-        </div>
-        
+            <div class="oj-flex">               
+                <div class="oj-flex-item">
+                    <label for="text-input-pwd">Password</label>
+                </div>
+                <div class="oj-flex-item-pwd">                             
+                    <!--<oj-input-password id="text-input" value=""></oj-input-password>-->
+                    <input id="text-input-pwd" data-bind="ojComponent: {component: 'ojInputPassword', value: password}">
+                </div>              
+            </div>   
+            <div class="oj-flex">               
+                <div class="oj-flex-item">
+                    <label for="text-input">File Name</label>
+                </div>
+                <div class="oj-flex-item">
+                    <!--<oj-input-text id="text-input_file_prefix" value="Employee.csv"></oj-input-text>-->
+                    <input id="text-input" data-bind="ojComponent: {component: 'ojInputText', value: fileprefix}">
+                </div> 
+<!--                <span class="oj-label">Current component values are: </span>
+                <span data-bind="text: Resturl"></span>                
+                <span data-bind="text: username"></span>
+                <span data-bind="text: password"></span>
+                <span data-bind="text: fileprefix"></span>-->
+            </div>   
+        </div>        
     </div>
 
 

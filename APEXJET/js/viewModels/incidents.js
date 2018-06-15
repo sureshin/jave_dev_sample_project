@@ -10,22 +10,31 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'ojs/ojbutton', 'ojs/ojinputtext'],
 
             function IncidentsViewModel() {
                 var self = this;
-                this.value = ko.observable("Green");
+                //self.value = ko.observable("Green");
+                self.Resturl= ko.observable("https://apex.oracle.com/pls/apex/ojet/hr/empinfo/?page=0");
+                self.username= ko.observable("");
+                self.password= ko.observable("");
+                self.fileprefix = ko.observable("Extract");
+//                var headers = {
+//                                "Authorization": "Basic " + btoa(USERNAME + ":" + PASSWORD)
+//                            };
 
                 self.buttonClick = function (event) {
-                    
+                    var filenm=  $("#text-input").val()+".csv";
+                    var Resturl=$("#text-input-URL").val();
+
                     $.ajaxSetup({async: false});
 
-                    var csvContent = '';
-                    var Resturl = "https://apex.oracle.com/pls/apex/ojet/hr/empinfo/?page=0"
+                    var csvContent = '';                    
                     console.log(Resturl.length);
-                    var headerExtract=false;
-                    while (Resturl.length!==0) {
+                    var headerExtract = false;
+                    while (Resturl.length !== 0) {
                         jQuery.ajax({
                             url: Resturl,
                             type: "GET",
                             contentType: 'application/json; charset=utf-8',
-                            success: function (resultData) {                                  
+//                            headers: headers,
+                            success: function (resultData) {
                                 console.log(resultData);
                                 for (index = 0; index < resultData.items.length; index++)
                                 {
@@ -33,53 +42,52 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'ojs/ojbutton', 'ojs/ojinputtext'],
                                     {
                                         var key = Object.keys(resultData.items[index]);
                                         csvContent += key + '\n';
-                                        headerExtract= true;
+                                        headerExtract = true;
 
                                     }
                                     var values = Object.values(resultData.items[index]);
                                     csvContent += values + '\n';
-                                   
+
                                 }
-                                if(typeof(resultData.next) != "undefined")
+                                if (typeof (resultData.next) != "undefined")
                                 {
-                                 Resturl = Object.values(resultData.next)[0]; 
-                             }
-                             else{
-                                 Resturl="";
-                             }
+                                    Resturl = Object.values(resultData.next)[0];
+                                } else {
+                                    Resturl = "";
+                                }
                             },
                             error: function (jqXHR, textStatus, errorThrown) {
                                 console.log("Failed!!");
-                                Resturl="";
+                                Resturl = "";
                             },
 
                             timeout: 120000,
                         });
-                        
-                    }
-                    
-                    if(csvContent.length !==0){
-                         var download = function (content, fileName, mimeType) {
-                                    var a = document.createElement('a');
-                                    mimeType = mimeType || 'application/octet-stream';
 
-                                    if (navigator.msSaveBlob) { // IE10
-                                        navigator.msSaveBlob(new Blob([content], {
-                                            type: mimeType
-                                        }), fileName);
-                                    } else if (URL && 'download' in a) { //html5 A[download]
-                                        a.href = URL.createObjectURL(new Blob([content], {
-                                            type: mimeType
-                                        }));
-                                        a.setAttribute('download', fileName);
-                                        document.body.appendChild(a);
-                                        a.click();
-                                        document.body.removeChild(a);
-                                    } else {
-                                        location.href = 'data:application/octet-stream,' + encodeURIComponent(content); // only this mime type is supported
-                                    }
-                                }
-                                download(csvContent, 'dowload.csv', 'text/csv;encoding:utf-8');
+                    }
+
+                    if (csvContent.length !== 0) {
+                        var download = function (content, fileName, mimeType) {
+                            var a = document.createElement('a');
+                            mimeType = mimeType || 'application/octet-stream';
+
+                            if (navigator.msSaveBlob) { // IE10
+                                navigator.msSaveBlob(new Blob([content], {
+                                    type: mimeType
+                                }), fileName);
+                            } else if (URL && 'download' in a) { //html5 A[download]
+                                a.href = URL.createObjectURL(new Blob([content], {
+                                    type: mimeType
+                                }));
+                                a.setAttribute('download', fileName);
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                            } else {
+                                location.href = 'data:application/octet-stream,' + encodeURIComponent(content); // only this mime type is supported
+                            }
+                        }
+                        download(csvContent, filenm, 'text/csv;encoding:utf-8');
                     }
 
                     return true;
