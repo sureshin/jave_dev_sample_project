@@ -5,40 +5,46 @@
 /*
  * Your incidents ViewModel code goes here
  */
-define(['ojs/ojcore', 'knockout', 'jquery', 'ojs/ojbutton', 'ojs/ojinputtext'],
+define(['ojs/ojcore', 'knockout', 'jquery', 'ojs/ojbutton', 'ojs/ojinputtext', 'ojs/ojinputnumber'],
         function (oj, ko, $) {
 
             function IncidentsViewModel() {
                 var self = this;
                 //self.value = ko.observable("Green");
-                self.Resturl= ko.observable("https://apex.oracle.com/pls/apex/ojet/hr/empinfo/?page=0");
-                self.username= ko.observable("");
-                self.password= ko.observable("");
+                self.Resturl = ko.observable("https://apex.oracle.com/pls/apex/ojet/hr/empinfo/?page=0");
+                self.username = ko.observable("");
+                self.password = ko.observable("");
                 self.fileprefix = ko.observable("Extract");
+                self.batchsize = ko.observable(25);
 //                var headers = {
 //                                "Authorization": "Basic " + btoa(USERNAME + ":" + PASSWORD)
 //                            };
 
                 self.buttonClick = function (event) {
-                    var filenm=  $("#text-input").val()+".csv";
-                    var Resturl=$("#text-input-URL").val();
+                    var filenm = $("#text-input").val() + ".csv";
+                    var Resturl = $("#text-input-URL").val();
+                    var BatchSize = $("#text-input-URL").val();
 
                     $.ajaxSetup({async: false});
 
-                    var csvContent = '';                    
+                    var csvContent = '';
                     console.log(Resturl.length);
                     var headerExtract = false;
+                    var file_index=1;
                     while (Resturl.length !== 0) {
+                        filenm=filenm+"_"+file_index;
                         jQuery.ajax({
                             url: Resturl,
                             type: "GET",
                             contentType: 'application/json; charset=utf-8',
 //                            headers: headers,
                             success: function (resultData) {
+                                
                                 console.log(resultData);
+                                file_index++;
                                 for (index = 0; index < resultData.items.length; index++)
                                 {
-                                    if (index === 0 && headerExtract === false)
+                                    if (headerExtract === false)
                                     {
                                         var key = Object.keys(resultData.items[index]);
                                         csvContent += key + '\n';
@@ -48,6 +54,32 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'ojs/ojbutton', 'ojs/ojinputtext'],
                                     var values = Object.values(resultData.items[index]);
                                     csvContent += values + '\n';
 
+                                }
+
+                                if (csvContent.length !== 0) {
+                                    var download = function (content, fileName, mimeType) {
+                                        var a = document.createElement('a');
+                                        mimeType = mimeType || 'application/octet-stream';
+
+                                        if (navigator.msSaveBlob) { // IE10
+                                            navigator.msSaveBlob(new Blob([content], {
+                                                type: mimeType
+                                            }), fileName);
+                                        } else if (URL && 'download' in a) { //html5 A[download]
+                                            a.href = URL.createObjectURL(new Blob([content], {
+                                                type: mimeType
+                                            }));
+                                            a.setAttribute('download', fileName);
+                                            document.body.appendChild(a);
+                                            a.click();
+                                            document.body.removeChild(a);
+                                        } else {
+                                            location.href = 'data:application/octet-stream,' + encodeURIComponent(content); // only this mime type is supported
+                                        }
+                                    }
+                                    download(csvContent, filenm, 'text/csv;encoding:utf-8');
+                                    csvContent='';
+                                    headerExtract=false;
                                 }
                                 if (typeof (resultData.next) != "undefined")
                                 {
@@ -64,30 +96,6 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'ojs/ojbutton', 'ojs/ojinputtext'],
                             timeout: 120000,
                         });
 
-                    }
-
-                    if (csvContent.length !== 0) {
-                        var download = function (content, fileName, mimeType) {
-                            var a = document.createElement('a');
-                            mimeType = mimeType || 'application/octet-stream';
-
-                            if (navigator.msSaveBlob) { // IE10
-                                navigator.msSaveBlob(new Blob([content], {
-                                    type: mimeType
-                                }), fileName);
-                            } else if (URL && 'download' in a) { //html5 A[download]
-                                a.href = URL.createObjectURL(new Blob([content], {
-                                    type: mimeType
-                                }));
-                                a.setAttribute('download', fileName);
-                                document.body.appendChild(a);
-                                a.click();
-                                document.body.removeChild(a);
-                            } else {
-                                location.href = 'data:application/octet-stream,' + encodeURIComponent(content); // only this mime type is supported
-                            }
-                        }
-                        download(csvContent, filenm, 'text/csv;encoding:utf-8');
                     }
 
                     return true;
